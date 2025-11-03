@@ -3,89 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Piccioni Forum</title>
+  <title>Project Piero</title>
+
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0; font-family: "EB Garamond", Georgia, serif;
-      background: linear-gradient(160deg,#0d0c0a 0%,#1f1c18 35%,#2c2114 70%,#1b1309 100%);
-      color: #f4f1e6; min-height: 100vh; display: flex; align-items: center;
-      justify-content: center; padding: 32px 16px;
-    }
-    .panel { width: min(520px,100%); padding: 36px; border-radius: 18px; background: rgba(26,21,15,.9);
-      box-shadow: 0 32px 60px rgba(0,0,0,.55); border: 1px solid rgba(178,140,86,.6);
-      backdrop-filter: blur(6px); position: relative; overflow: hidden;
-    }
-    .panel h1 { margin-top: 0; letter-spacing:.35rem; text-transform: uppercase; text-align:center;
-      color:#e2c07b; font-size:2.1rem; font-family:"Cinzel","EB Garamond",serif;
-    }
-    .panel p,.panel label { color:#dcd3c2; line-height:1.5; }
-    label { display:block; margin-bottom:8px; font-weight:600; letter-spacing:.05rem; }
-    input[type="password"], input[type="text"], textarea {
-      width:100%; padding:12px 14px; border-radius:10px; border:1px solid rgba(221,193,140,.25);
-      background: rgba(255,255,255,.05); color:inherit; font-size:1rem; transition: .2s;
-    }
-    textarea { resize: vertical; min-height: 100px; }
-    input:focus, textarea:focus { outline:none; border-color:#e6c78a; background: rgba(230,199,138,.12); }
-    button {
-      width:100%; margin-top:16px; padding:12px; font-size:1rem; font-weight:600; letter-spacing:.08rem;
-      text-transform: uppercase; border-radius:10px; border:none; cursor:pointer;
-      background: linear-gradient(120deg,#b58e53,#e3c182); color:#2c2114; transition:.1s;
-      font-family: "Cinzel","EB Garamond",serif;
-    }
-    button:hover { transform: translateY(-1px); box-shadow:0 10px 20px rgba(227,193,130,.35); }
-    .error { margin-top:12px; color:#f0a67a; font-weight:600; text-transform:uppercase; letter-spacing:.08rem; }
-    .forum-layout { display:grid; gap:24px; }
-    .primary-column { display:flex; flex-direction:column; gap:24px; }
-    @media(min-width:980px){
-      .forum-layout{ grid-template-columns: 2fr 2fr 1fr; width:min(1200px,92vw);}
-      body .panel{width:100%;}
-    }
-    .chat-messages{ gap:8px; }
-    .msg{ display:flex; align-items:flex-end; gap:8px; }
-    .msg .bubble{
-      padding:8px 12px; border:1px solid rgba(178,140,86,.25); border-radius:12px; background:rgba(255,255,255,.04);
-      max-width: 80%; line-height:1.3; font-size:.98rem;
-    }
-    .msg small{ color:#9f875f; font-size:.72rem; margin-left:6px; }
-    .updates,.members,.todos,.chat{
-      padding:24px; border-radius:14px; background: rgba(32,26,19,.92);
-      border:1px solid rgba(178,140,86,.35); max-height:70vh; overflow-y:auto;
-      box-shadow: inset 0 0 0 1px rgba(120,90,52,.15);
-    }
-    .updates h2,.members h2,.todos h2,.chat h2{
-      margin-top:0;margin-bottom:16px;text-transform:uppercase;letter-spacing:.2rem;font-size:1.05rem;color:#e2c07b;font-family:"Cinzel","EB Garamond",serif;
-    }
-    .update,.todo-item,.chat-message{
-      padding:16px;margin-bottom:16px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid rgba(178,140,86,.2);
-    }
-    .update strong,.chat-message strong,.todo-item strong{
-      display:block;color:#e0b065;margin-bottom:6px;letter-spacing:.08rem;font-family:"Cinzel","EB Garamond",serif;
-    }
-    .members ul{ list-style:none; padding:0; margin:0; }
-    .members li{ padding:10px; border-bottom:1px solid rgba(178,140,86,.18); display:flex; justify-content:space-between; align-items:center; letter-spacing:.05rem;}
-    .members li:last-child{ border-bottom:none;}
-    .badge{ padding:4px 10px; border-radius:20px; background:rgba(178,140,86,.28); font-size:.75rem; letter-spacing:.06rem; font-family:"Cinzel","EB Garamond",serif;}
-    .post-form{ margin-top:24px; padding-top:24px; border-top:1px solid rgba(255,255,255,.1); }
-    .chat-messages{ display:flex; flex-direction:column; gap:12px; max-height:260px; overflow-y:auto; }
-    .todo-header{ display:flex; justify-content:space-between; align-items:center; gap:12px; }
-    .todo-actions{ display:flex; align-items:center; gap:8px; }
-    .todo-details small, .chat-message small { display:block; margin-top:6px; color:#ba9d6b; font-size:.78rem; letter-spacing:.04rem; }
-    .todo-item.completed{ opacity:.7; } .todo-item.completed .todo-details{ display:none; }
-    .badge.badge-small{ font-size:.7rem; padding:3px 8px; }
-    .todo-toggle{ width:auto; padding:8px 14px; font-size:.85rem; letter-spacing:.05rem; text-transform:none; border-radius:8px; }
-    .todo-toggle:hover{ transform:none; box-shadow:0 6px 14px rgba(227,193,130,.25); }
-    .hidden{ display:none; }
-    .topbar { margin-bottom:12px; display:flex; gap:8px; align-items:center; justify-content:space-between; }
-    .topbar small { color:#ba9d6b; }
-  </style>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
+  <!-- Password Gate -->
   <div class="panel" id="gate">
-    <h1>Piccioni</h1>
+    <h1>Project Piero</h1>
     <p>Enter the forum password to continue.</p>
     <form id="password-form">
       <label for="password">Password</label>
@@ -95,12 +26,13 @@
     </form>
   </div>
 
+  <!-- Onboarding (phone → name) -->
   <div class="panel hidden" id="onboarding">
     <h1>Welcome</h1>
     <p>Verify your phone and set your display name to continue.</p>
 
     <div id="ob-step-phone">
-      <label for="ob-phone">Phone Number (E.164, e.g., +14045551234)</label>
+      <label for="ob-phone">Phone Number (Ex. +14045551234 (dont forget the +1))</label>
       <input type="text" id="ob-phone" placeholder="+1..." autocomplete="tel">
       <div id="ob-recaptcha" style="margin-top:12px;"></div>
       <button type="button" id="ob-send" class="todo-toggle" style="width:auto; margin-top:12px;">Send Code</button>
@@ -119,51 +51,94 @@
     </div>
   </div>
 
-  <div class="forum-layout hidden" id="forum">
-    <div class="primary-column">
-      <section class="updates">
-        <div class="topbar">
-          <h2>Recent Posts</h2>
-          <small id="whoami"></small>
-        </div>
-        <div id="updates-list"></div>
-        <form class="post-form" id="post-form">
-          <label for="message">Message</label>
-          <textarea id="message" name="message" maxlength="400" placeholder="Share an update..." required></textarea>
-          <button type="submit">Post</button>
-        </form>
-      </section>
+  <!-- App (multi-page) -->
+  <div class="hidden" id="forum">
+    <nav class="topnav">
+      <a href="#home"  data-view="home"  class="navlink">Home</a>
+      <a href="#posts" data-view="posts" class="navlink">Posts</a>
+      <a href="#chat"  data-view="chat"  class="navlink">Chat</a>
+      <a href="#todos" data-view="todos" class="navlink">To-Dos</a>
+      <span class="spacer"></span>
+      <small id="whoami"></small>
+    </nav>
 
-      <section class="chat">
-        <h2>Chat</h2>
-        <div id="chat-messages" class="chat-messages"></div>
-        <form class="post-form" id="chat-form">
-          <label for="chat-message">Message</label>
-          <textarea id="chat-message" name="chat-message" maxlength="400" placeholder="Start a conversation..." required></textarea>
-          <button type="submit">Send</button>
-        </form>
-      </section>
-
-      <section class="todos">
-        <h2>To-Do List</h2>
-        <div id="todo-list"></div>
-        <form class="post-form" id="todo-form">
-          <label for="task">Task</label>
-          <input type="text" id="task" name="task" maxlength="60" placeholder="What needs to be done?" required>
-          <label for="discussion">Discussion</label>
-          <textarea id="discussion" name="discussion" maxlength="400" placeholder="Details or notes..." required></textarea>
-          <button type="submit">Add To-Do</button>
-        </form>
-      </section>
+    <!-- HOME -->
+    <div class="page" id="page-home">
+      <div class="panel panel-wide">
+        <h1>Welcome to Piccioni</h1>
+        <p>Private forum for our ~12 members. Use the tabs above to post updates, chat, and track to-dos.</p>
+        <ul>
+          <li><strong>Identity:</strong> Phone sign-in; your display name is saved once.</li>
+          <li><strong>Privacy:</strong> Only authenticated workspace members can read/write.</li>
+          <li><strong>Etiquette:</strong> Be concise, constructive, kind.</li>
+        </ul>
+      </div>
+      <div class="forum-layout">
+        <section class="updates">
+          <h2>Latest Posts</h2>
+          <div id="updates-list"></div>
+          <form class="post-form" id="post-form">
+            <label for="message">Message</label>
+            <textarea id="message" maxlength="400" placeholder="Share an update..." required></textarea>
+            <button type="submit">Post</button>
+          </form>
+        </section>
+        <aside class="members">
+          <h2>Members</h2>
+          <ul id="member-list"></ul>
+        </aside>
+      </div>
     </div>
 
-    <aside class="members">
-      <h2>Members</h2>
-      <ul id="member-list"></ul>
-    </aside>
+    <!-- POSTS -->
+    <div class="page hidden" id="page-posts">
+      <div class="panel panel-narrow">
+        <h1>Posts</h1>
+        <section class="updates">
+          <div id="updates-list-posts"></div>
+          <form class="post-form" id="post-form-posts">
+            <label for="message-posts">Message</label>
+            <textarea id="message-posts" maxlength="400" placeholder="Share an update..." required></textarea>
+            <button type="submit">Post</button>
+          </form>
+        </section>
+      </div>
+    </div>
+
+    <!-- CHAT -->
+    <div class="page hidden" id="page-chat">
+      <div class="panel panel-narrow">
+        <h1>Chat</h1>
+        <section class="chat">
+          <div id="chat-messages" class="chat-messages"></div>
+          <form class="post-form" id="chat-form">
+            <label for="chat-message">Message</label>
+            <textarea id="chat-message" maxlength="400" placeholder="Start a conversation..." required></textarea>
+            <button type="submit">Send</button>
+          </form>
+        </section>
+      </div>
+    </div>
+
+    <!-- TODOS -->
+    <div class="page hidden" id="page-todos">
+      <div class="panel panel-narrow">
+        <h1>To-Dos</h1>
+        <section class="todos">
+          <div id="todo-list"></div>
+          <form class="post-form" id="todo-form">
+            <label for="task">Task</label>
+            <input type="text" id="task" maxlength="60" placeholder="What needs to be done?" required>
+            <label for="discussion">Discussion</label>
+            <textarea id="discussion" maxlength="400" placeholder="Details or notes..." required></textarea>
+            <button type="submit">Add To-Do</button>
+          </form>
+        </section>
+      </div>
+    </div>
   </div>
 
-  <!-- Paste your exact Firebase config from the console here -->
+  <!-- Firebase config -->
   <script>
     window.PICCIONI_FIREBASE_CONFIG = {
       apiKey: "AIzaSyDxMKFnmBZXT6rfW9l5Ep7WFPNjbj5ExWM",
@@ -176,353 +151,7 @@
     };
   </script>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import {
-      getFirestore, collection, addDoc, query, orderBy, onSnapshot,
-      serverTimestamp, updateDoc, doc
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-    import {
-      getAuth,
-      signInAnonymously,
-      onAuthStateChanged,
-      RecaptchaVerifier,
-      signInWithPhoneNumber,
-      linkWithPhoneNumber
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-    const PASSWORD = "Piccioni";
-    const wsId = "piccioni-default";
-    const memberList = document.getElementById("member-list");
-    const updatesList = document.getElementById("updates-list");
-    const chatMessages = document.getElementById("chat-messages");
-    const todoList = document.getElementById("todo-list");
-    const whoami = document.getElementById("whoami");
-
-    const passwordForm = document.getElementById("password-form");
-    const passwordInput = document.getElementById("password");
-    const errorBanner = document.getElementById("error");
-    const gate = document.getElementById("gate");
-    const forum = document.getElementById("forum");
-    const postForm = document.getElementById("post-form");
-    const chatForm = document.getElementById("chat-form");
-    const todoForm = document.getElementById("todo-form");
-    const messageInput = document.getElementById("message");
-    const chatMessageInput = document.getElementById("chat-message");
-    const taskInput = document.getElementById("task");
-    const discussionInput = document.getElementById("discussion");
-
-    // Onboarding UI elements
-    const onboarding = document.getElementById('onboarding');
-    const obPhoneInput = document.getElementById('ob-phone');
-    const obCodeInput = document.getElementById('ob-code');
-    const obSendBtn = document.getElementById('ob-send');
-    const obVerifyBtn = document.getElementById('ob-verify');
-    const obPhoneStatus = document.getElementById('ob-phone-status');
-    const obNameStep = document.getElementById('ob-step-name');
-    const obPhoneStep = document.getElementById('ob-step-phone');
-    const obNameInput = document.getElementById('ob-name');
-    const obSaveBtn = document.getElementById('ob-save');
-
-
-    const dateFmt = new Intl.DateTimeFormat([], { dateStyle:"short", timeStyle:"short" });
-    const ts = v => v?.toDate ? v.toDate() : (typeof v === "number" ? new Date(v) : new Date());
-    const fmt = v => dateFmt.format(ts(v));
-    const sortBy = arr => arr.slice().sort((a,b)=> (ts(b.timestamp)-ts(a.timestamp)));
-
-    let currentMember = null; // { uid, displayName, phoneNumber }
-
-    let app, db, auth;
-    const cfg = window.PICCIONI_FIREBASE_CONFIG;
-    if (!cfg || !cfg.apiKey || !cfg.projectId || !cfg.appId) {
-      console.error("Firebase config missing. Paste your config in the non-module script above.");
-      alert("Firebase config missing. Paste your Firebase config at the top of index.html.");
-    } else {
-      app = initializeApp(cfg);
-      db = getFirestore(app);
-      auth = getAuth(app);
-      // Debug exposure
-      window.__app = app;
-      window.__db = db;
-      window.__auth = auth;
-      console.log("Using Firebase config:", cfg);
-      // Initialize reCAPTCHA for onboarding phone auth
-      let obRecaptcha = null;
-      try {
-        obRecaptcha = new RecaptchaVerifier(auth, 'ob-recaptcha', { size: 'invisible' });
-        window.__obRecaptcha = obRecaptcha;
-      } catch (e) {
-        console.warn('Recaptcha init issue:', e);
-      }
-
-      // Member list realtime
-      const membersRef = collection(db, 'workspaces', wsId, 'members');
-      onSnapshot(query(membersRef, orderBy('createdAt','asc')), snap => {
-        memberList.innerHTML = '';
-        snap.forEach(d => {
-          const m = d.data();
-          const li = document.createElement('li');
-          li.textContent = m.displayName || (m.phoneNumber || d.id);
-          memberList.appendChild(li);
-        });
-      });
-
-      onAuthStateChanged(auth, (user) => {
-        if (user) {
-          whoami.textContent = user.phoneNumber
-            ? `Signed in (phone ${user.phoneNumber})`
-            : `Signed in anonymously (${user.uid.slice(0,6)})`;
-        } else {
-          whoami.textContent = '';
-        }
-      });
-    }
-
-    function renderUpdates(items=[]) {
-      updatesList.innerHTML = "";
-      if (!items.length) { const p=document.createElement("p"); p.textContent="No posts yet."; updatesList.appendChild(p); return; }
-      sortBy(items).forEach(u=>{
-        const card=document.createElement("article"); card.className="update";
-        card.innerHTML = `<strong>${u.author||"Anonymous"}</strong><p>${u.message||""}</p><small>${fmt(u.timestamp)}</small>`;
-        updatesList.appendChild(card);
-      });
-    }
-
-    function renderChat(items=[]) {
-      chatMessages.innerHTML = "";
-      if (!items.length) { const p=document.createElement("p"); p.textContent="No messages yet."; chatMessages.appendChild(p); return; }
-      sortBy(items).forEach(m=>{
-        const row=document.createElement("div"); row.className="msg";
-        const bubble=document.createElement("div"); bubble.className="bubble";
-        bubble.innerHTML = `<strong>${m.author||"Anonymous"}</strong><div>${m.message||""}</div>`;
-        const meta=document.createElement("small"); meta.textContent = fmt(m.timestamp);
-        row.appendChild(bubble); row.appendChild(meta);
-        chatMessages.appendChild(row);
-      });
-    }
-
-    function renderTodos(items=[]) {
-      todoList.innerHTML = "";
-      if (!items.length) { const p=document.createElement("p"); p.textContent="No to-dos yet."; todoList.appendChild(p); return; }
-      sortBy(items).forEach(t=>{
-        const card=document.createElement("article"); card.className="todo-item"; if (t.completed) card.classList.add("completed");
-        const completedBadge = t.completed ? `<span class="badge badge-small">Completed</span>` : "";
-        card.innerHTML = `
-          <div class="todo-header">
-            <strong>${t.task||"Untitled"}</strong>
-            <div class="todo-actions">
-              ${completedBadge}
-              <button type="button" class="todo-toggle" data-id="${t.id}" data-completed="${!!t.completed}">${t.completed?"Reopen":"Mark Done"}</button>
-            </div>
-          </div>
-          <div class="todo-details">
-            <p>${t.discussion||""}</p>
-            <small>${fmt(t.timestamp)}</small>
-          </div>`;
-        todoList.appendChild(card);
-      });
-    }
-
-    // --- Onboarding flow (phone → name) ---
-    let phoneConfirmation = null;
-
-    async function ensurePhoneLinked() {
-      if (!auth.currentUser) await requireAnon();
-      if (auth.currentUser && auth.currentUser.phoneNumber) return true;
-      // show onboarding if no phone
-      gate.classList.add('hidden');
-      onboarding.classList.remove('hidden');
-      forum.classList.add('hidden');
-      return false;
-    }
-
-    async function loadCurrentMember() {
-      if (!auth.currentUser) return null;
-      const uid = auth.currentUser.uid;
-      const snap = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js').then(m => m.getDoc(m.doc(db,'workspaces',wsId,'members',uid)));
-      if (snap.exists()) {
-        currentMember = { uid, ...(snap.data()) };
-        return currentMember;
-      }
-      return null;
-    }
-
-    if (obSendBtn) obSendBtn.addEventListener('click', async () => {
-      try {
-        await requireAnon();
-        const num = (obPhoneInput.value||'').trim();
-        if (!num) { obPhoneStatus.textContent = 'Enter phone like +14045551234'; return; }
-        if (auth.currentUser.isAnonymous) {
-          phoneConfirmation = await linkWithPhoneNumber(auth.currentUser, num, window.__obRecaptcha);
-        } else {
-          phoneConfirmation = await signInWithPhoneNumber(auth, num, window.__obRecaptcha);
-        }
-        obPhoneStatus.textContent = 'Code sent. Enter the 6-digit code.';
-      } catch (e) {
-        console.error(e);
-        obPhoneStatus.textContent = `Send failed: ${e?.code||''} ${e?.message||e}`;
-      }
-    });
-
-    if (obVerifyBtn) obVerifyBtn.addEventListener('click', async () => {
-      try {
-        const code = (obCodeInput.value||'').trim();
-        if (!phoneConfirmation) { obPhoneStatus.textContent = 'Send code first.'; return; }
-        const cred = await phoneConfirmation.confirm(code);
-        obPhoneStatus.textContent = 'Phone verified.';
-        obPhoneStep.classList.add('hidden');
-        obNameStep.classList.remove('hidden');
-      } catch (e) {
-        console.error(e);
-        obPhoneStatus.textContent = `Verify failed: ${e?.code||''} ${e?.message||e}`;
-      }
-    });
-
-    if (obSaveBtn) obSaveBtn.addEventListener('click', async () => {
-      try {
-        const name = (obNameInput.value||'').trim();
-        if (!name) { document.getElementById('ob-name-status').textContent = 'Enter a name'; return; }
-        const uid = auth.currentUser.uid;
-        const fsm = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
-        await fsm.setDoc(fsm.doc(db,'workspaces',wsId,'members',uid), {
-          displayName: name,
-          phoneNumber: auth.currentUser.phoneNumber || null,
-          createdAt: serverTimestamp()
-        }, { merge: true });
-        currentMember = { uid, displayName: name, phoneNumber: auth.currentUser.phoneNumber };
-        // proceed to forum
-        onboarding.classList.add('hidden');
-        forum.classList.remove('hidden');
-        startRealtime();
-      } catch (e) {
-        console.error(e);
-        document.getElementById('ob-name-status').textContent = `Save failed: ${e?.code||''} ${e?.message||e}`;
-      }
-    });
-
-    let postsUnsub=null, chatUnsub=null, todosUnsub=null, subs=false;
-
-    async function requireAnon() {
-      if (!auth) throw new Error("Firebase not initialized");
-      if (auth.currentUser) return;
-      try {
-        await signInAnonymously(auth);
-      } catch (err) {
-        console.error("Anonymous sign-in failed:", err);
-        alert(`Anonymous sign-in failed: ${err?.code || ''} ${err?.message || err}`);
-        throw err;
-      }
-    }
-
-    async function startRealtime() {
-      if (subs) return; subs = true;
-      await requireAnon();
-      console.log("Realtime listeners attached for:", wsId);
-
-      postsUnsub = onSnapshot(query(collection(db,"workspaces",wsId,"posts"), orderBy("timestamp","desc")), snap=>{
-        const items = snap.docs.map(d=>({ id:d.id, ...d.data() }));
-        renderUpdates(items);
-      });
-
-      chatUnsub = onSnapshot(query(collection(db,"workspaces",wsId,"chat"), orderBy("timestamp","desc")), snap=>{
-        const items = snap.docs.map(d=>({ id:d.id, ...d.data() }));
-        renderChat(items);
-      });
-
-      todosUnsub = onSnapshot(query(collection(db,"workspaces",wsId,"todos"), orderBy("timestamp","desc")), snap=>{
-        const items = snap.docs.map(d=>({ id:d.id, ...d.data() }));
-        renderTodos(items);
-      });
-    }
-
-    function unlock() {
-      // After password, require phone-linked account; otherwise show onboarding
-      requireAnon().then(async ()=>{
-        const hasPhone = await ensurePhoneLinked();
-        if (hasPhone) {
-          // ensure member profile exists; if missing, ask name once
-          const member = await loadCurrentMember();
-          if (!member) {
-            gate.classList.add('hidden');
-            onboarding.classList.remove('hidden');
-            obPhoneStep.classList.add('hidden');
-            obNameStep.classList.remove('hidden');
-            return;
-          }
-          gate.classList.add('hidden');
-          onboarding.classList.add('hidden');
-          forum.classList.remove('hidden');
-          startRealtime();
-        }
-      }).catch(err=>{
-        console.error(err);
-        alert(`Anonymous sign-in failed: ${err?.code || ''} ${err?.message || err}.`);
-      });
-    }
-
-    passwordForm.addEventListener("submit", e=>{
-      e.preventDefault();
-      if (passwordInput.value.trim() === PASSWORD) { errorBanner.classList.add("hidden"); unlock(); }
-      else { errorBanner.classList.remove("hidden"); passwordInput.value=""; passwordInput.focus(); }
-    });
-
-    postForm.addEventListener("submit", async e=>{
-      e.preventDefault();
-      try {
-        await requireAnon();
-        const author = currentMember?.displayName || 'Anonymous';
-        const message = messageInput.value.trim();
-        if (!message) return;
-        await addDoc(collection(db, "workspaces", wsId, "posts"), {
-          author, message, timestamp: serverTimestamp()
-        });
-        postForm.reset();
-      } catch (err) {
-        console.error("Post submit failed:", err);
-        alert(`Post failed: ${err?.code || ''} ${err?.message || err}`);
-      }
-    });
-
-    chatForm.addEventListener("submit", async e=>{
-      e.preventDefault();
-      try {
-        await requireAnon();
-        const author = currentMember?.displayName || 'Anonymous';
-        const message = chatMessageInput.value.trim();
-        if (!message) return;
-        await addDoc(collection(db, "workspaces", wsId, "chat"), {
-          author, message, timestamp: serverTimestamp()
-        });
-        chatForm.reset();
-      } catch (err) {
-        console.error("Chat submit failed:", err);
-        alert(`Chat failed: ${err?.code || ''} ${err?.message || err}`);
-      }
-    });
-
-    todoForm.addEventListener("submit", async e=>{
-      e.preventDefault();
-      try {
-        await requireAnon();
-        const task = taskInput.value.trim();
-        const discussion = discussionInput.value.trim();
-        if (!task || !discussion) return;
-        await addDoc(collection(db, "workspaces", wsId, "todos"), {
-          task, discussion, completed: false, completedAt: null, timestamp: serverTimestamp()
-        });
-        todoForm.reset();
-        taskInput.focus();
-      } catch (err) {
-        console.error("Todo submit failed:", err);
-        alert(`Todo failed: ${err?.code || ''} ${err?.message || err}`);
-      }
-    });
-
-    todoList.addEventListener("click", async e=>{
-      const btn = e.target.closest(".todo-toggle"); if (!btn) return;
-      const id = btn.dataset.id; const done = btn.dataset.completed === "true";
-      await updateDoc(doc(db,"workspaces",wsId,"todos",id), { completed: !done, completedAt: !done ? serverTimestamp() : null });
-    });
-  </script>
+  <!-- App JS -->
+  <script type="module" src="./app.js"></script>
 </body>
 </html>
