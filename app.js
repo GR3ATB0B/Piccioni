@@ -98,17 +98,8 @@ if (!cfg || !cfg.apiKey || !cfg.projectId || !cfg.appId) {
   window.__app = app; window.__db = db;
   console.log("Using Firebase config:", cfg);
 
-  // Members realtime
-  const membersRef = collection(db, 'workspaces', wsId, 'members');
-  onSnapshot(query(membersRef, orderBy('createdAt','asc')), snap => {
-    memberList.innerHTML = '';
-    snap.forEach(d => {
-      const m = d.data();
-      const li = document.createElement('li');
-      li.textContent = m.displayName || d.id;
-      memberList.appendChild(li);
-    });
-  });
+  // Members roster stays static on the client
+  renderDefaultMembers();
 }
 
 // ----- Renderers -----
@@ -203,6 +194,8 @@ const defaultMembers = [
   { name: "Chosborne", status: "Member" }
 ];
 
+renderDefaultMembers();
+
 // ----- Credential helpers -----
 function findMemberByName(input) {
   if (!input) return null;
@@ -217,6 +210,7 @@ function credentialsValid(member, password) {
 }
 
 function renderDefaultMembers() {
+  if (!memberList) return;
   memberList.innerHTML = "";
   defaultMembers.forEach(member => {
     const li = document.createElement("li");
@@ -270,21 +264,25 @@ passwordForm.addEventListener("submit", e => {
   }
 });
 
-passkeyForm.addEventListener("submit", e => {
-  e.preventDefault();
-  const key = passkeyInput.value.trim();
-  if (key === PASSKEY) {
-    passkeyError.classList.add("hidden");
-    passkeyInput.value = "";
-    passkeyGate.classList.add("hidden");
-    gate.classList.remove("hidden");
-    usernameInput.focus();
-  } else {
-    passkeyError.classList.remove("hidden");
-    passkeyInput.value = "";
-    passkeyInput.focus();
-  }
-});
+if (passkeyForm && passkeyInput) {
+  passkeyForm.addEventListener("submit", e => {
+    e.preventDefault();
+    const key = passkeyInput.value.trim();
+    if (key.toLowerCase() === PASSKEY.toLowerCase()) {
+      passkeyError?.classList.add("hidden");
+      passkeyInput.value = "";
+      passkeyGate?.classList.add("hidden");
+      gate?.classList.remove("hidden");
+      usernameInput?.focus();
+    } else {
+      passkeyError?.classList.remove("hidden");
+      passkeyInput.value = "";
+      passkeyInput.focus();
+    }
+  });
+} else {
+  console.warn("Passkey form not found; ensure #passkey-form and inputs exist in index.html.");
+}
 
 // ----- Posting -----
 function bindPostForm(formEl, inputEl){
