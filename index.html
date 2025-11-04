@@ -14,41 +14,30 @@
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
-  <!-- Password Gate -->
-  <div class="panel" id="gate">
+  <!-- Passkey Gate -->
+  <div class="panel" id="passkey-gate">
     <h1>Project Piero</h1>
-    <p>Enter the forum password to continue.</p>
-    <form id="password-form">
-      <label for="password">Password</label>
-      <input type="password" id="password" name="password" autocomplete="off" inputmode="text" required>
-      <button type="submit">Enter</button>
-      <div class="error hidden" id="error">Incorrect password.</div>
+    <p>Present the passkey to proceed.</p>
+    <form id="passkey-form">
+      <label for="passkey">Passkey</label>
+      <input type="password" id="passkey" name="passkey" autocomplete="off" inputmode="text" placeholder="Secrect Passkey" required>
+      <button type="submit">Unlock</button>
+      <div class="error hidden" id="passkey-error">Incorrect passkey.</div>
     </form>
   </div>
 
-  <!-- Onboarding (phone → name) -->
-  <div class="panel hidden" id="onboarding">
-    <h1>Welcome</h1>
-    <p>Verify your phone and set your display name to continue.</p>
-
-    <div id="ob-step-phone">
-      <label for="ob-phone">Phone Number (Ex. +14045551234 -> add the +1))</label>
-      <input type="text" id="ob-phone" placeholder="+1..." autocomplete="tel">
-      <div id="ob-recaptcha" style="margin-top:12px;"></div>
-      <button type="button" id="ob-send" class="todo-toggle" style="width:auto; margin-top:12px;">Send Code</button>
-
-      <label for="ob-code" style="margin-top:12px; display:block;">Verification Code</label>
-      <input type="text" id="ob-code" inputmode="numeric" autocomplete="one-time-code" placeholder="123456">
-      <button type="button" id="ob-verify" class="todo-toggle" style="width:auto; margin-top:12px;">Verify</button>
-      <small id="ob-phone-status" style="display:block; margin-top:8px; color:#ba9d6b;"></small>
-    </div>
-
-    <div id="ob-step-name" class="hidden">
-      <label for="ob-name">Your display name</label>
-      <input type="text" id="ob-name" maxlength="32" placeholder="e.g., Nash">
-      <button type="button" id="ob-save" class="todo-toggle" style="width:auto; margin-top:12px;">Save & Continue</button>
-      <small id="ob-name-status" style="display:block; margin-top:8px; color:#ba9d6b;"></small>
-    </div>
+  <!-- Credentials Gate -->
+  <div class="panel hidden" id="gate">
+    <h1>Project Piero</h1>
+    <p>Enter your member credentials to continue.</p>
+    <form id="password-form">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" autocomplete="off" placeholder="User" required>
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" autocomplete="off" inputmode="text" placeholder="Specific Password" required>
+      <button type="submit">Enter</button>
+      <div class="error hidden" id="error">Invalid username or password.</div>
+    </form>
   </div>
 
   <!-- App (multi-page) -->
@@ -68,8 +57,8 @@
         <h1>Welcome to Piccioni</h1>
         <p>Private forum for our ~12 members. Use the tabs above to post updates, chat, and track to-dos.</p>
         <ul>
-          <li><strong>Identity:</strong> Phone sign-in; your display name is saved once.</li>
-          <li><strong>Privacy:</strong> Only authenticated workspace members can read/write.</li>
+          <li><strong>Identity:</strong> Username = your name, password = namelovespiccioni.</li>
+          <li><strong>Privacy:</strong> Keep the link within the circle.</li>
           <li><strong>Etiquette:</strong> Be concise, constructive, kind.</li>
         </ul>
       </div>

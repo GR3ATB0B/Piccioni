@@ -1,17 +1,12 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getFirestore, collection, addDoc, query, orderBy, onSnapshot,
-  serverTimestamp, updateDoc, doc, getDoc, setDoc
+  serverTimestamp, updateDoc, doc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import {
-  getAuth,
-  onAuthStateChanged,
-  RecaptchaVerifier,
-  signInWithPhoneNumber
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 // ----- Config / constants -----
-const PASSWORD = "Piccioni";
+const PASSKEY = "Piccioni";
+const PASSWORD_SUFFIX = "lovespiccioni";
 const wsId = "piccioni-default";
 const cfg = window.PICCIONI_FIREBASE_CONFIG;
 
@@ -22,11 +17,16 @@ const updatesListPosts = document.getElementById("updates-list-posts");
 const chatMessages = document.getElementById("chat-messages");
 const todoList = document.getElementById("todo-list");
 const whoami = document.getElementById("whoami");
+const passkeyGate = document.getElementById("passkey-gate");
 const gate = document.getElementById("gate");
 const forum = document.getElementById("forum");
 
 // Forms and inputs
+const passkeyForm = document.getElementById("passkey-form");
+const passkeyInput = document.getElementById("passkey");
+const passkeyError = document.getElementById("passkey-error");
 const passwordForm = document.getElementById("password-form");
+const usernameInput = document.getElementById("username");
 const passwordInput = document.getElementById("password");
 const errorBanner = document.getElementById("error");
 
@@ -41,18 +41,6 @@ const chatMessageInput = document.getElementById("chat-message");
 const todoForm = document.getElementById("todo-form");
 const taskInput = document.getElementById("task");
 const discussionInput = document.getElementById("discussion");
-
-// Onboarding elements
-const onboarding = document.getElementById('onboarding');
-const obPhoneInput = document.getElementById('ob-phone');
-const obCodeInput = document.getElementById('ob-code');
-const obSendBtn = document.getElementById('ob-send');
-const obVerifyBtn = document.getElementById('ob-verify');
-const obPhoneStatus = document.getElementById('ob-phone-status');
-const obNameStep = document.getElementById('ob-step-name');
-const obPhoneStep = document.getElementById('ob-step-phone');
-const obNameInput = document.getElementById('ob-name');
-const obSaveBtn = document.getElementById('ob-save');
 
 // Pages & router
 const pages = {
@@ -92,9 +80,8 @@ const ts = v => {
 const fmt = v => dateFmt.format(ts(v));
 const sortBy = arr => arr.slice().sort((a,b)=> (ts(b.timestamp)-ts(a.timestamp)));
 
-let currentMember = null; // { uid, displayName, phoneNumber }
-let app, db, auth;
-let phoneConfirmation = null;
+let currentMember = null; // { displayName }
+let app, db;
 let subs = false;
 let firebaseReady = false;
 
@@ -105,20 +92,11 @@ if (!cfg || !cfg.apiKey || !cfg.projectId || !cfg.appId) {
 } else {
   app = initializeApp(cfg);
   db = getFirestore(app);
-  auth = getAuth(app);
   firebaseReady = true;
 
   // Debug
-  window.__app = app; window.__db = db; window.__auth = auth;
+  window.__app = app; window.__db = db;
   console.log("Using Firebase config:", cfg);
-
-  // reCAPTCHA for onboarding (invisible)
-  try {
-    const obRecaptcha = new RecaptchaVerifier(auth, 'ob-recaptcha', { size: 'invisible' });
-    window.__obRecaptcha = obRecaptcha;
-  } catch (e) {
-    console.warn('Recaptcha init issue:', e);
-  }
 
   // Members realtime
   const membersRef = collection(db, 'workspaces', wsId, 'members');
@@ -127,14 +105,9 @@ if (!cfg || !cfg.apiKey || !cfg.projectId || !cfg.appId) {
     snap.forEach(d => {
       const m = d.data();
       const li = document.createElement('li');
-      li.textContent = m.displayName || (m.phoneNumber || d.id);
+      li.textContent = m.displayName || d.id;
       memberList.appendChild(li);
     });
-  });
-
-  // Auth state
-  onAuthStateChanged(auth, (user) => {
-    whoami.textContent = user?.phoneNumber ? `Signed in (${user.phoneNumber})` : '';
   });
 }
 
@@ -213,116 +186,104 @@ async function startRealtime() {
   });
 }
 
-// ----- Member profile helpers -----
-async function loadCurrentMember() {
-  if (!auth.currentUser) return null;
-  const uid = auth.currentUser.uid;
-  const snap = await getDoc(doc(db,'workspaces',wsId,'members',uid));
-  if (snap.exists()) {
-    currentMember = { uid, ...(snap.data()) };
-    return currentMember;
-  }
-  return null;
+// ----- Member directory -----
+const defaultMembers = [
+  { name: "Wade", status: "Founder" },
+  { name: "George", status: "Founder" },
+  { name: "Sam", status: "Member" },
+  { name: "Daniel", status: "Member" },
+  { name: "Westin", status: "Member" },
+  { name: "Tim", status: "Member" },
+  { name: "Miles", status: "Member" },
+  { name: "Sean", status: "Member" },
+  { name: "Nash", status: "Member" },
+  { name: "Brody", status: "Member" },
+  { name: "Aleck", status: "Member" },
+  { name: "Stiney", status: "Member" },
+  { name: "Chosborne", status: "Member" }
+];
+
+// ----- Credential helpers -----
+function findMemberByName(input) {
+  if (!input) return null;
+  const normalized = input.trim().toLowerCase();
+  return defaultMembers.find(m => m.name.toLowerCase() === normalized) || null;
 }
 
-// ----- Onboarding actions -----
-if (obSendBtn) obSendBtn.addEventListener('click', async () => {
-  try {
-    const num = (obPhoneInput.value||'').trim();
-    if (!num) { obPhoneStatus.textContent = 'Enter phone like +14045551234'; return; }
-    phoneConfirmation = await signInWithPhoneNumber(auth, num, window.__obRecaptcha);
-    obPhoneStatus.textContent = 'Code sent. Enter the 6-digit code.';
-  } catch (e) {
-    console.error(e);
-    obPhoneStatus.textContent = `Send failed: ${e?.code||''} ${e?.message||e}`;
-  }
-});
+function credentialsValid(member, password) {
+  if (!member) return false;
+  const expected = `${member.name.toLowerCase()}${PASSWORD_SUFFIX}`;
+  return password.trim().toLowerCase() === expected;
+}
 
-if (obVerifyBtn) obVerifyBtn.addEventListener('click', async () => {
-  try {
-    const code = (obCodeInput.value||'').trim();
-    if (!phoneConfirmation) { obPhoneStatus.textContent = 'Send code first.'; return; }
-    await phoneConfirmation.confirm(code);
-    obPhoneStatus.textContent = 'Phone verified.';
-    const member = await loadCurrentMember();
-    if (member && member.displayName) {
-      onboarding.classList.add('hidden');
-      forum.classList.remove('hidden');
-      routeFromHash();
-      startRealtime();
-      return;
-    }
-    obPhoneStep.classList.add('hidden');
-    obNameStep.classList.remove('hidden');
-  } catch (e) {
-    console.error(e);
-    if (e?.code === 'auth/invalid-verification-code') {
-      obPhoneStatus.textContent = 'Invalid code. Double-check and try again.';
-    } else if (e?.code === 'auth/too-many-requests') {
-      obPhoneStatus.textContent = 'Too many attempts. Wait a few minutes or use a test number while developing.';
-    } else {
-      obPhoneStatus.textContent = `Verify failed: ${e?.code||''} ${e?.message||e}`;
-    }
-  }
-});
-
-if (obSaveBtn) obSaveBtn.addEventListener('click', async () => {
-  try {
-    const name = (obNameInput.value||'').trim();
-    if (!name) { document.getElementById('ob-name-status').textContent = 'Enter a name'; return; }
-    const uid = auth.currentUser.uid;
-    await setDoc(doc(db,'workspaces',wsId,'members',uid), {
-      displayName: name,
-      phoneNumber: auth.currentUser.phoneNumber || null,
-      createdAt: serverTimestamp()
-    }, { merge: true });
-    currentMember = { uid, displayName: name, phoneNumber: auth.currentUser.phoneNumber };
-    onboarding.classList.add('hidden');
-    forum.classList.remove('hidden');
-    routeFromHash();
-    startRealtime();
-  } catch (e) {
-    console.error(e);
-    document.getElementById('ob-name-status').textContent = `Save failed: ${e?.code||''} ${e?.message||e}`;
-  }
-});
-
-// ----- App flow: password → (onboarding) → forum -----
-function unlock() {
-  if (!firebaseReady) {
-    alert("The app is offline because Firebase is not configured. Please add configuration and reload.");
-    return;
-  }
-  (async () => {
-    const u = auth.currentUser;
-    if (u && u.phoneNumber) {
-      const member = await loadCurrentMember();
-      gate.classList.add('hidden');
-      if (member && member.displayName) {
-        onboarding.classList.add('hidden');
-        forum.classList.remove('hidden');
-        routeFromHash();
-        startRealtime();
-      } else {
-        onboarding.classList.remove('hidden');
-        obPhoneStep.classList.add('hidden');
-        obNameStep.classList.remove('hidden');
-      }
-      return;
-    }
-    gate.classList.add('hidden');
-    onboarding.classList.remove('hidden');
-    forum.classList.add('hidden');
-  })().catch(err => {
-    console.error(err);
-    alert(`Unlock failed: ${err?.code || ''} ${err?.message || err}.`);
+function renderDefaultMembers() {
+  memberList.innerHTML = "";
+  defaultMembers.forEach(member => {
+    const li = document.createElement("li");
+    const name = document.createElement("span");
+    name.textContent = member.name;
+    const badge = document.createElement("span");
+    badge.className = "badge";
+    badge.textContent = member.status;
+    li.appendChild(name);
+    li.appendChild(badge);
+    memberList.appendChild(li);
   });
 }
 
-passwordForm.addEventListener("submit", e=>{
+function unlock() {
+  if (!firebaseReady) {
+    console.warn("Proceeding in local mode: Firebase not configured.");
+  }
+  if (!currentMember) {
+    errorBanner.classList.remove("hidden");
+    return;
+  }
+
+  passkeyGate.classList.add("hidden");
+  gate.classList.add("hidden");
+  forum.classList.remove("hidden");
+  whoami.textContent = `Signed in as ${currentMember.displayName}`;
+  if (!firebaseReady || !memberList.hasChildNodes()) {
+    renderDefaultMembers();
+  }
+  routeFromHash();
+  startRealtime();
+}
+
+passwordForm.addEventListener("submit", e => {
   e.preventDefault();
-  if (passwordInput.value.trim() === PASSWORD) { errorBanner.classList.add("hidden"); unlock(); }
-  else { errorBanner.classList.remove("hidden"); passwordInput.value=""; passwordInput.focus(); }
+  const username = usernameInput.value.trim();
+  const password = passwordInput.value.trim();
+  const member = findMemberByName(username);
+
+  if (credentialsValid(member, password)) {
+    currentMember = { displayName: member.name };
+    errorBanner.classList.add("hidden");
+    usernameInput.value = "";
+    passwordInput.value = "";
+    unlock();
+  } else {
+    errorBanner.classList.remove("hidden");
+    passwordInput.value = "";
+    passwordInput.focus();
+  }
+});
+
+passkeyForm.addEventListener("submit", e => {
+  e.preventDefault();
+  const key = passkeyInput.value.trim();
+  if (key === PASSKEY) {
+    passkeyError.classList.add("hidden");
+    passkeyInput.value = "";
+    passkeyGate.classList.add("hidden");
+    gate.classList.remove("hidden");
+    usernameInput.focus();
+  } else {
+    passkeyError.classList.remove("hidden");
+    passkeyInput.value = "";
+    passkeyInput.focus();
+  }
 });
 
 // ----- Posting -----
