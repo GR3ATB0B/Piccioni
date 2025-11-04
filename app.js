@@ -42,6 +42,45 @@ const todoForm = document.getElementById("todo-form");
 const taskInput = document.getElementById("task");
 const discussionInput = document.getElementById("discussion");
 
+// ----- Member directory -----
+const defaultMembers = [
+  { name: "Wade", status: "Founder" },
+  { name: "George", status: "Founder" },
+  { name: "Sam", status: "Member" },
+  { name: "Daniel", status: "Member" },
+  { name: "Westin", status: "Member" },
+  { name: "Tim", status: "Member" },
+  { name: "Miles", status: "Member" },
+  { name: "Sean", status: "Member" },
+  { name: "Nash", status: "Member" },
+  { name: "Brody", status: "Member" },
+  { name: "Aleck", status: "Member" },
+  { name: "Stiney", status: "Member" },
+  { name: "Chosborne", status: "Member" }
+];
+
+function renderMembers(list) {
+  if (!memberList) return;
+  memberList.innerHTML = "";
+  list.forEach(member => {
+    const li = document.createElement("li");
+    const name = document.createElement("span");
+    name.textContent = member.name;
+    const badge = document.createElement("span");
+    badge.className = "badge";
+    badge.textContent = member.status || "Member";
+    li.appendChild(name);
+    li.appendChild(badge);
+    memberList.appendChild(li);
+  });
+}
+
+function renderDefaultMembers() {
+  renderMembers(defaultMembers);
+}
+
+renderDefaultMembers();
+
 // Pages & router
 const pages = {
   home:  document.getElementById('page-home'),
@@ -98,8 +137,6 @@ if (!cfg || !cfg.apiKey || !cfg.projectId || !cfg.appId) {
   window.__app = app; window.__db = db;
   console.log("Using Firebase config:", cfg);
 
-  // Members roster stays static on the client
-  renderDefaultMembers();
 }
 
 // ----- Renderers -----
@@ -177,25 +214,6 @@ async function startRealtime() {
   });
 }
 
-// ----- Member directory -----
-const defaultMembers = [
-  { name: "Wade", status: "Founder" },
-  { name: "George", status: "Founder" },
-  { name: "Sam", status: "Member" },
-  { name: "Daniel", status: "Member" },
-  { name: "Westin", status: "Member" },
-  { name: "Tim", status: "Member" },
-  { name: "Miles", status: "Member" },
-  { name: "Sean", status: "Member" },
-  { name: "Nash", status: "Member" },
-  { name: "Brody", status: "Member" },
-  { name: "Aleck", status: "Member" },
-  { name: "Stiney", status: "Member" },
-  { name: "Chosborne", status: "Member" }
-];
-
-renderDefaultMembers();
-
 // ----- Credential helpers -----
 function findMemberByName(input) {
   if (!input) return null;
@@ -207,22 +225,6 @@ function credentialsValid(member, password) {
   if (!member) return false;
   const expected = `${member.name.toLowerCase()}${PASSWORD_SUFFIX}`;
   return password.trim().toLowerCase() === expected;
-}
-
-function renderDefaultMembers() {
-  if (!memberList) return;
-  memberList.innerHTML = "";
-  defaultMembers.forEach(member => {
-    const li = document.createElement("li");
-    const name = document.createElement("span");
-    name.textContent = member.name;
-    const badge = document.createElement("span");
-    badge.className = "badge";
-    badge.textContent = member.status;
-    li.appendChild(name);
-    li.appendChild(badge);
-    memberList.appendChild(li);
-  });
 }
 
 function unlock() {
