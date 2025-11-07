@@ -45,8 +45,8 @@ const discussionInput = document.getElementById("discussion");
 // ----- Member directory -----
 const defaultMembers = [
   { name: "Wade", status: "Founder" },
+  { name: "Sam", status: "Junior Founder" },
   { name: "George", status: "Founder" },
-  { name: "Sam", status: "Member" },
   { name: "Daniel", status: "Member" },
   { name: "Westin", status: "Member" },
   { name: "Tim", status: "Member" },
@@ -56,7 +56,9 @@ const defaultMembers = [
   { name: "Brody", status: "Member" },
   { name: "Aleck", status: "Member" },
   { name: "Stiney", status: "Member" },
-  { name: "Chosborne", status: "Member" }
+  { name: "Chosborne", status: "Member" },
+  { name: "Wicky", status: "Member" },
+  { name: "Brice", status: "Member" }
 ];
 
 function renderMembers(list) {
